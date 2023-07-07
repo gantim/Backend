@@ -8,26 +8,29 @@ from sqlalchemy.pool import NullPool
 
 from src.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-# Base = declarative_base()
-#
-# engine = create_engine(DATABASE_URL, echo=True, future=True)
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-# # async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-#
-#
-# async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-#     async with SessionLocal() as session:
-#         yield session
+DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 Base = declarative_base()
 
-metadata = MetaData()
+# metadata = MetaData()
+#
+# engine = create_async_engine(DATABASE_URL, poolclass=NullPool)
+# async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+#
+#
+# async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+#     async with async_session_maker() as session:
+#         yield session
 
-engine = create_async_engine(DATABASE_URL, poolclass=NullPool)
-async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+engine = create_engine(DATABASE_URL, echo=True, future=True)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
+def get_db():
+    """Database session generator"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

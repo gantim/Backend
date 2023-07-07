@@ -2,8 +2,11 @@ from datetime import datetime
 
 from sqlalchemy import Integer, String, Column, LargeBinary, \
     ForeignKey, Boolean, Double, TIMESTAMP
+
+from src.config import SECRET_KEY
 from src.database import Base
 import bcrypt
+import jwt
 
 
 class ProductOrder(Base):
@@ -84,9 +87,9 @@ class User(Base):
     id = Column(Integer, nullable=False, primary_key=True)
     first_name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
-    middle_surname = Column(String, nullable=False)
+    middle_surname = Column(String)
     phone = Column(String, nullable=False, unique=True)
-    email = Column(String, nullable=False)
+    email = Column(String)
     hashed_password = Column(LargeBinary, nullable=False)
     address = Column(String)
     bonus = Column(Integer)
@@ -106,3 +109,12 @@ class User(Base):
     def validate_password(self, password) -> bool:
         """Confirms password validity"""
         return bcrypt.checkpw(password.encode(), self.hashed_password)
+
+    def generate_token(self) -> dict:
+        """Generate access token for user"""
+        return {
+            "access_token": str(jwt.encode(
+                {"name": self.first_name, "phone": self.phone, "id": self.id},
+                SECRET_KEY
+            ))
+        }
