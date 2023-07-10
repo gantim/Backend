@@ -14,6 +14,7 @@ from src.schemas.address import AddressSchema, AddressBaseSchema
 from src.schemas.user import UserSchema, CreateUserSchema, UserOutSchema
 from src.services.db import user as user_db_services
 from src.services.db import address as address_db_services
+from src.services.db import user as send_password_reset_link
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
@@ -27,14 +28,12 @@ ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
 
 @router.post('/recovery')
-def password_recovery(payload: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_db)):
+def password_recovery(phone: str, reset_link: str):
+    # Ваша логика для восстановления пароля
 
-    user = user_db_services.get_user(session, payload.phone)
+    send_password_reset_link(phone, reset_link)
 
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-    return {"message": "Password recovery link sent"}
+    return {"message": "Password recovery SMS sent"}
 
 @router.post('/signup', response_model=UserSchema)
 def signup(
