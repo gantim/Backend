@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Integer, String, Column, LargeBinary, \
-    ForeignKey, Boolean, Double, TIMESTAMP
+    ForeignKey, Boolean, Double, TIMESTAMP, DateTime
 
 from src.config import SECRET_KEY
 from src.database import Base
@@ -53,7 +53,8 @@ class Order(Base):
     address = Column(String)
     id_chef = Column(Integer, ForeignKey("chefs.id"))
     id_couriers = Column(Integer, ForeignKey("couriers.id"))
-    order_time = Column(TIMESTAMP, default=datetime.utcnow)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    update_at = Column(DateTime)
     cost = Column(Double)
 
 
