@@ -81,6 +81,18 @@ class Chef(Base):
     salary = Column(Double)
 
 
+class Address(Base):
+    """Models a address table"""
+    __tablename__ = "address"
+    id = Column(Integer, nullable=False, primary_key=True)
+    id_user = Column(Integer, ForeignKey("users.id"))
+    address = Column(String, nullable=False)
+    apartment_number = Column(String, nullable=False)
+    entrance = Column(String)
+    floor = Column(Integer)
+    doorphone = Column(String)
+
+
 class User(Base):
     """Models a user table"""
     __tablename__ = "users"
@@ -91,7 +103,6 @@ class User(Base):
     phone = Column(String, nullable=False, unique=True)
     email = Column(String)
     hashed_password = Column(LargeBinary, nullable=False)
-    address = Column(String)
     bonus = Column(Integer)
     role = Column(String)
 
