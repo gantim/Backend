@@ -14,7 +14,6 @@ from src.schemas.address import AddressSchema, AddressBaseSchema
 from src.schemas.user import UserSchema, CreateUserSchema, UserOutSchema
 from src.services.db import user as user_db_services
 from src.services.db import address as address_db_services
-from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
 router = APIRouter(
@@ -89,9 +88,9 @@ def add_address(token: Annotated[str, Depends(oauth2_scheme)],
 
 @router.put("/address")
 def edit_address(token: Annotated[str, Depends(oauth2_scheme)],
-                payload: AddressSchema = Body(),
-                session: Session = Depends(get_db)
-                ):
+                 payload: AddressSchema = Body(),
+                 session: Session = Depends(get_db)
+                 ):
     data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
     payload.id_user = data["id"]
     stmt = sqlalchemy_update(Address).where(
@@ -100,3 +99,14 @@ def edit_address(token: Annotated[str, Depends(oauth2_scheme)],
     session.commit()
     return {'Status: 200 OK'}
 
+
+@router.delete("/address")
+def delete_address(id_address: int,
+                   token: Annotated[str, Depends(oauth2_scheme)],
+                   session: Session = Depends(get_db)
+                   ):
+    data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    address = session.query(Address).filter_by(id=id_address).first()
+    session.delete(address)
+    session.commit()
+    return {'Status: 200 OK'}
