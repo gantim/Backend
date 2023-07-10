@@ -26,6 +26,15 @@ ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
 
+@router.post('/recovery')
+def password_recovery(payload: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_db)):
+
+    user = user_db_services.get_user(session, payload.phone)
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    return {"message": "Password recovery link sent"}
 
 @router.post('/signup', response_model=UserSchema)
 def signup(
@@ -35,7 +44,6 @@ def signup(
     """Processes request to register user account."""
     payload.hashed_password = user_model.User.hash_password(payload.hashed_password)
     return user_db_services.create_user(session, user=payload)
-
 
 @router.post('/login', response_model=Dict)
 def login(payload: OAuth2PasswordRequestForm = Depends(),
