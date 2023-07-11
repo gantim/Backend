@@ -94,6 +94,28 @@ class Address(Base):
     doorphone = Column(String)
 
 
+class PaymentCard(Base):
+    """Models a PaymentCard table"""
+    __tablename__ = "paymentCard"
+    id = Column(Integer, nullable=False, primary_key=True)
+    id_user = Column(Integer, ForeignKey("users.id"))
+    card_number = Column(Integer)
+    date = Column(String)
+    cvc = Column(Integer)
+
+
+class ConsoleUser(Base):
+    """Models a СonsoleUser table"""
+    __tablename__ = "consoleUser"
+    id = Column(Integer, nullable=False, primary_key=True)
+    first_name = Column(String, nullable=False)
+    surname = Column(String, nullable=False)
+    middle_surname = Column(String)
+    phone = Column(String, nullable=False, unique=True)
+    email = Column(String)
+    hashed_password = Column(String, nullable=False)
+
+
 class User(Base):
     """Models a user table"""
     __tablename__ = "users"

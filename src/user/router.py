@@ -118,3 +118,6 @@ def delete_address(id_address: int,
     session.delete(address)
     session.commit()
     return {'Status: 200 OK'}
+
+
+
